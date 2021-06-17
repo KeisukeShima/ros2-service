@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="service_example" exec="add_two_ints_server" output="screen" />
+  <node pkg="service_example" exec="add_two_ints_client" output="screen" />
+</launch>
