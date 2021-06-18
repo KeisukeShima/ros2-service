@@ -42,5 +42,12 @@ rclcpp_components_register_node(services_library
   PLUGIN "proposal::ClientNode"
   EXECUTABLE proposal_client)
 
+# rclcpp_components_register_node() uses SingleThreadedExecutor and cannot be used.
+# Intead, use MultiThreadedExecutor. See relay_server_mani.cpp
+# https://qiita.com/NeK/items/4ed4c46c1087d1089b57
+ament_auto_add_executable(proposal_relay_server
+  src/services/proposal/relay_server.cpp
+  src/services/proposal/relay_server_main.cpp)
+
 # Install launch files.
 ament_auto_package(INSTALL_TO_SHARE launch)
