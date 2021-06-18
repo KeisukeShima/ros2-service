@@ -30,9 +30,6 @@ void RelayServerNode::requestReceivedCallback(
   (void)request_header;
   RCLCPP_INFO(get_logger(), "request received");
 
-  response_value_ = 0;
-  response_received_ = false;
-
   rclcpp::WallRate loop_rate(std::chrono::seconds(1));
   while (!service_client_->service_is_ready()) {
     RCLCPP_INFO(get_logger(), "waiting service");
@@ -46,26 +43,21 @@ void RelayServerNode::requestReceivedCallback(
   auto result {
     service_client_->async_send_request(
       request,
-      std::bind(&RelayServerNode::serviceResponseCallback, this, std::placeholders::_1))
+      [](rclcpp::Client<example_interfaces::srv::AddTwoInts>::SharedFuture){})
   };
 
-  while (!response_received_) {
+  std::future_status status = result.wait_for(std::chrono::seconds(0));
+  while (status != std::future_status::ready) {
     RCLCPP_INFO(get_logger(), "waiting response");
     if (!rclcpp::ok()) {
       return;
     }
-    loop_rate.sleep();
+    status = result.wait_for(std::chrono::seconds(1));
   }
 
-  response->sum = response_value_;
+  RCLCPP_INFO(get_logger(), "response: '%ld'", result.get()->sum);
+  response->sum = result.get()->sum;
   RCLCPP_INFO(get_logger(), "send response");
-}
-
-void RelayServerNode::serviceResponseCallback(rclcpp::Client<example_interfaces::srv::AddTwoInts>::SharedFuture future)
-{
-  RCLCPP_INFO(get_logger(), "response: '%ld'", future.get()->sum);
-  response_value_ = future.get()->sum;
-  response_received_ = true;
 }
 
 }  // namespace proposal
