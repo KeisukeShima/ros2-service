@@ -18,17 +18,29 @@ ament_auto_find_build_dependencies()
 ament_auto_add_executable(add_two_ints_client
   src/services/add_two_ints_client.cpp)
 
+ament_auto_add_executable(bad_client
+  src/services/bad_client.cpp)
+
+ament_auto_add_executable(good_client_no_timer
+  src/services/good_client_no_timer.cpp)
+
 ament_auto_add_library(services_library SHARED
   src/services/add_two_ints_server.cpp
   src/services/add_two_ints_client.cpp
-  src/services/add_two_ints_client_async.cpp)
+  src/services/add_two_ints_client_async.cpp
+  src/services/proposal/client.cpp)
 
 rclcpp_components_register_node(services_library
   PLUGIN "service_example::ServerNode"
   EXECUTABLE add_two_ints_server)
+
 rclcpp_components_register_node(services_library
   PLUGIN "service_example::ClientNode"
   EXECUTABLE add_two_ints_client_async)
+
+rclcpp_components_register_node(services_library
+  PLUGIN "proposal::ClientNode"
+  EXECUTABLE proposal_client)
 
 # Install launch files.
 ament_auto_package(INSTALL_TO_SHARE launch)

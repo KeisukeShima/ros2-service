@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="service_example" exec="add_two_ints_server" output="screen" />
+  <node pkg="service_example" exec="proposal_client" output="screen" />
+  <node pkg="demo_nodes_cpp" exec="listener" output="screen" />
+</launch>
